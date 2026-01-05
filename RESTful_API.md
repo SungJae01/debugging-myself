@@ -21,7 +21,7 @@ RESTful API에서 가장 중요한 것은 "무엇(자원)"을 "어떻게(행위)
       |**PATCH**|일부 수정|Update|```PATCH /users/1```(1번 회원의 닉네임만 변경)|
       |**DELETE**|데이터 삭제|Delete|```DELETE /users/1``` (1번 회원 탈퇴)|
    
-   - 표현 (Representation) : "어떤 모양으로"
+3. 표현 (Representation) : "어떤 모양으로"
      - 클라이언트와 서버가 데이터를 주고받을 때 어떤 형식으로 주고받을지 지정한다.
      - 보통 99% **JSON** 형식을 사용한다.
 
@@ -86,7 +86,7 @@ TypeScript 환경에서 RESTful API를 요청할 때 가장 대중적으로 사�
 
 1. 사전 준비 : 데이터 타입 정의 (Interface)
    먼저 주고받을 데이터의 형태를 정의한다.
-   ```typescript
+   ```ts
    // types.ts
 
    // 상품 데이터 타입
@@ -103,7 +103,7 @@ TypeScript 환경에서 RESTful API를 요청할 때 가장 대중적으로 사�
 2. API 요청 함수 모음 (API Service)
 
    각 메서드 별로 TypeScript 문법 포인트와 함께 예제 코드 작성
-   ```typescript
+   ```ts
       import axios from 'axios';
       import { Product, NewProduct } from './types';
 
@@ -133,7 +133,7 @@ TypeScript 환경에서 RESTful API를 요청할 때 가장 대중적으로 사�
 
       // 4. PATCH : 일부 수정 (Update)
       // 변경할 필드만 보내면 됨 -> Partial 유틸리티 타입응 사용한다.
-      //Partial<Product>는 모든 속성을 선택적(Optional)으로 만듬
+      // Partial<Product>는 모든 속성을 선택적(Optional)으로 만듬
       export const updateProductPrice = async (id : number, patchData : Partial<Product>) => {
          const response = await axios.patch<Product>(`${BASE_URL}/products/${id}`, patchData);
          return response.data;
@@ -147,3 +147,60 @@ TypeScript 환경에서 RESTful API를 요청할 때 가장 대중적으로 사�
       }
    ```
 
+# React 컴포넌트에서 실제 사용 예시
+ 위 TypeScript로 만든 API 요청 함수들을 컴포넌트에서 사용해보자.
+
+ ```tsx
+   import React, { useEffect, useState } from 'react';
+   import { getProducts, createProduct, updateProductPrice } from './apiService';
+   import { Product } from '/types';
+
+   export default function ProductPage() {
+      const [products, setProducts] = useState<Product[]>([]);
+
+      // 1. GET 예시 (화면 렌더링 시)
+      useEffect(() => {
+         const loadData = async () => {
+            try{
+               const data = await getProducts();
+               setProducts(data); 
+               // data는 자동으로 Product[] 타입으로 인식됨
+               // 이유는? : apiService.ts 에서 정의한 getProducts 함수에서 제네릭<>을 통해 리턴 타입을 명시함.
+               // TypeScript의 가장 큰 장점 - 한 번 정의하고, 어디서든 안전하게 사용이 가능함.
+            } catch (error) {
+               console.error("불러오기 실패", error);
+            }
+         };
+         loadData();
+      }, []);
+      
+      // 2. POST 예시 (버튼 클릭 시)
+      const handleAdd = async () => {
+         const newOne = { name : "게이밍 마우스", price : 50000 };
+         const created = await creatProduct(newOne);
+         setProducts([...products, created]); // 화면 즉시 갱신
+      };
+
+      // 4. PATCH 예시 (가격만 변경)
+      const handleDiscount = async (id : number) => {
+         // 가격만 1000원으로 변경
+         await updateProductPrice(id, { price : 1000 });
+         // 이후 다시 목록을 불러오거나 State 업데이트
+      };
+
+      return (
+         <div>
+            <h1>상품 목록</h1>
+            <button onClick={handleAdd}>상품 추가</button>
+            <ul>
+               {products.map(p => (
+                  <li key={p.id}>
+                     {p.name} - {p.price}원
+                     <button onClick={() => handleDiscount(p.id)}>할인 적용</button>
+                  </li>
+               ))}
+            </ul>
+         </div>
+      );
+   }
+ ```
