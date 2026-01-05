@@ -123,4 +123,27 @@ TypeScript 환경에서 RESTful API를 요청할 때 가장 대중적으로 사�
          await axios.post<Product>(`${BASE_URL}/products`, productData);
          return response.data;
       }
+
+      // 3. PUT : 전체 수정 (Update)
+      // 모든 필드를 다 보내야 함
+      export const updateProduct = async (id : number, productData : NewPorduct) => {
+         const response = await axios.put<Product>(`${BASE_URL}/products/${id}`, productData);
+         return response.data;
+      }
+
+      // 4. PATCH : 일부 수정 (Update)
+      // 변경할 필드만 보내면 됨 -> Partial 유틸리티 타입응 사용한다.
+      //Partial<Product>는 모든 속성을 선택적(Optional)으로 만듬
+      export const updateProductPrice = async (id : number, patchData : Partial<Product>) => {
+         const response = await axios.patch<Product>(`${BASE_URL}/products/${id}`, patchData);
+         return response.data;
+      }
+
+      // 5. DELETE : 삭제 (Delete)
+      // 보통 응답 데이터가 없거나 성공 메세지만 온다.
+      export const deleteProduct = ansyn (id : number) => {
+         const response = await axios.delete< {success : boolean} >(`${BASE_URL}/products/${id}`);
+         return response.data;
+      }
    ```
+
