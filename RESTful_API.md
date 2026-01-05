@@ -15,11 +15,11 @@ RESTful API에서 가장 중요한 것은 "무엇(자원)"을 "어떻게(행위)
 
       |HTTP 메서드|역할|CRUD|예시 (회원 관리)|
       |------|---|---|---|
-      |**GET**|데이터 조회|Read|```GET /users``` (목록 조회)|
-      |**POST**|데이터 생성|Create|```POST /usres``` (신규 가입)|
-      |**PUT**|전체 수정|Update|```PUT /users/1``` (1번 회원 정보 통째로 변경)|
-      |**PATCH**|일부 수정|Update|```PATCH /users/1```(1번 회원의 닉네임만 변경)|
-      |**DELETE**|데이터 삭제|Delete|```DELETE /users/1``` (1번 회원 탈퇴)|
+      |**GET**|데이터 조회|Read|`GET /users` (목록 조회)|
+      |**POST**|데이터 생성|Create|`POST /usres` (신규 가입)|
+      |**PUT**|전체 수정|Update|`PUT /users/1` (1번 회원 정보 통째로 변경)|
+      |**PATCH**|일부 수정|Update|`PATCH /users/1`(1번 회원의 닉네임만 변경)|
+      |**DELETE**|데이터 삭제|Delete|`DELETE /users/1` (1번 회원 탈퇴)|
    
 3. 표현 (Representation) : "어떤 모양으로"
      - 클라이언트와 서버가 데이터를 주고받을 때 어떤 형식으로 주고받을지 지정한다.
@@ -27,9 +27,9 @@ RESTful API에서 가장 중요한 것은 "무엇(자원)"을 "어떻게(행위)
 
 ## RESTful API 설계 예시 (쇼핑몰)
 만약 쇼핑몰의 **'상품(Products)'** 기능을 만든다면, RESTful한 주소는 다음과 같다.
-- 상품 목록 보기 : ```GET /products```
-- 특정 상품(ID : 10) 상세 보기 : ```GET /products/10```
-- 새 상품 등록하기 : ```POST /products``` (데이터는 Body에 담아 보냄)
+- 상품 목록 보기 : `GET /products`
+- 특정 상품(ID : 10) 상세 보기 : `GET /products/10`
+- 새 상품 등록하기 : `POST /products` (데이터는 Body에 담아 보냄)
 
   - 데이터 준비 : 보내고자 하는 데이터를 json 객체 형식으로 만든다.
       ```json
@@ -72,13 +72,13 @@ RESTful API에서 가장 중요한 것은 "무엇(자원)"을 "어떻게(행위)
 ## 응답 코드 (State Code)의 중요성
 RESTful API는 성공/실패 여부를 **HTTP 상태 코드**로 명확하게 알려주어야 한다.
 
-- ```200 OK``` : 성공
+- `200 OK` : 성공
 
-- ```201 Created``` : 생성 성공 (POST 요청 시)
-- ```400 Bad Request``` : 요청 형식이 잘못됨
-- ```401 Unauthorized``` : 로그인 필요 (인증 실패)
-- ```404 Not Found``` : 없는 자원 (주소 틀림)
-- ```500 Internal Server Error``` : 서버 터짐 (개발자 실수)
+- `201 Created` : 생성 성공 (POST 요청 시)
+- `400 Bad Request` : 요청 형식이 잘못됨
+- `401 Unauthorized` : 로그인 필요 (인증 실패)
+- `404 Not Found` : 없는 자원 (주소 틀림)
+- `500 Internal Server Error` : 서버 터짐 (개발자 실수)
 
 # TypeScript 환경에서 RESTful API 요청 예제
 
@@ -150,7 +150,7 @@ TypeScript 환경에서 RESTful API를 요청할 때 가장 대중적으로 사�
 # React 컴포넌트에서 실제 사용 예시
  위 TypeScript로 만든 API 요청 함수들을 컴포넌트에서 사용해보자.
 
- ```tsx
+   ```tsx
    import React, { useEffect, useState } from 'react';
    import { getProducts, createProduct, updateProductPrice } from './apiService';
    import { Product } from '/types';
@@ -203,4 +203,13 @@ TypeScript 환경에서 RESTful API를 요청할 때 가장 대중적으로 사�
          </div>
       );
    }
- ```
+   ```
+
+## TypeScript를 사용하여 API 요청 시 핵심 포인트는?
+
+1. 제네릭 사용 (`<Type>`) : `axios.get<Product[]>` 처럼 제네릭을 명시하면, `response.data`를 사용할 때 자동 완성이 되고 타입 에러를 잡아준다.
+2. 유틸리티 타입 활용 : 
+   
+   - `Omit` : ID처럼 서버가 만드는 필드를 뺄 때 사용 (POST)
+   - `Partial` : 일부 필드만 수정할 때 타입을 유연하게 만들 때 사용 (PATCH)
+
