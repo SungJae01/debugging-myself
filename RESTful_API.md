@@ -213,3 +213,97 @@ TypeScript 환경에서 RESTful API를 요청할 때 가장 대중적으로 사�
    - `Omit` : ID처럼 서버가 만드는 필드를 뺄 때 사용 (POST)
    - `Partial` : 일부 필드만 수정할 때 타입을 유연하게 만들 때 사용 (PATCH)
 
+# jQuery 에서 API 요청 보내기 AJAX(Asynchoronous JavaScript and XML) 메서드 사용
+
+jQuery의 가장 큰 장점은 복잡한 브라우저 호환성 문제를 해결하고, 매우 직관적이고 짧은 코드로 서버와 통신할 수 있다는 점이다.
+
+|메서드|역할|특징|
+|------|---|---|
+|`$.ajax()`|만등|GET, POST, PUT, DELETE 등 모든 설정이 가능하다.|
+|`$.get()`|조회 전용|GET 요청을 빠르게 보낼 때 사용하는 단축 문법이다.|
+|`$.post()`|생성 전용ㅇ|POST 요청을 빠르게 보낼 때 사용하는 단축 문법이다.|
+
+1. GET 데이터 조회 (Read)
+```js
+$.ajax({
+   url : 'http://api.myshop.com/products' // 요청할 주소
+   type : "GET"   // 요청 방식 (GET)
+   dataType: "json"  // 서버에서 받을 데이터 타입
+   success : function(response){
+      // 성공 시 실행
+      console.log("데이터 조회 성공", response);
+   },
+   error : function(xhr, status, error){
+      // 실패 시 실행
+      console.error("에러 발생", error);
+   }
+});
+```
+**단축 문법** : `$.get("http://api.myshop.com/products", function(data){ ... });`
+
+2. POST : 데이터 생성 (Create)
+```js
+$.ajax({
+   url : "http://api.myshop.com/products",
+   type : "POST",
+   data : {
+      name: "게이밍 마우스",
+      price: 50000
+   }, // jQuery가 자동으로 폼 데이터 형식으로 변환해서 보냄
+   success : function(response){
+      console.log("생성 완료", response);
+   }
+});
+```
+
+3. PUT : 데이터 수정 (Update)
+- 주의 : **REST API**에서 JSON 형식으로 데이터를 받길 원한다면 `contentType` 과 `JSON.stringify` 설정이 필요할 수 있다.
+```js
+$.ajax({
+   url : "http://api.myshop.com/products/10",
+   type : "PUT",
+   contentType : "application/json", // 서버에게 JSON 보낸다 하고 알려주는 역할
+   data : {
+      name: "무선 마우스",
+      price: 60000
+   }, // 객체를 JSON 문자열로 변환
+   success : function(response){
+      console.log("수정 완료", response);
+   }
+});
+```
+
+4. DELETE : 데이터 삭제 (Delete)
+```js
+$.ajax({
+   url : "http://api.myshop.com/products/10",
+   type : "DELETE",
+   success : function(response){
+      console.log("삭제 완료");
+   }
+})
+```
+
+## 최신 스타일 : Promise 패턴 (.done, .fail)
+콜백 지옥(callback hell)을 피하기 위해 `success`, `error` 대신 **체이닝(Chainig)** 방식을 권장하고있다.
+```js
+$.ajax({
+   url : "http://api.myshop.com/products",
+   type : "GET"
+})
+.done(function(data){
+   // 성공 (HTTP 200)
+   console.log("성공!", data);
+})
+.fail(function(xhr, status, error){
+   // 실패 (HTTP 4xx, 5xx)
+   console.log("오류 발생", error)
+})
+.always(function(){
+   // 성공하든 실패하든 무조건 실행 (예 : 로딩 아이콘 끄기)
+   console.log("요청 종료");
+})
+```
+
+# Promise 패턴
+# Virtual DOM이란?
