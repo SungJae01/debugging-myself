@@ -306,4 +306,69 @@ $.ajax({
 ```
 
 # Promise 패턴
+React 에서 **Promise 패턴**은 주로 비동기 작업(API 호출 등)울 처리하고, 그 결과에 따라 화면(UI)을 업데이트하는 표준화된 방식을 말한다.
+
+React는 기본적으로 동기적(순서대로 즉시 실행)으로 작동하지만, 서버에서 데이터를 가져오는 것은 시간이 걸리는 비동기 작업이다. 이때 **Promise**가 다리 역할을 한다.
+
+## Promise의 3가지 상태와 React State 매핑
+Promise에는 2가지 상태가 있고, 이를 React 컴포넌트의 상태로 치환해서 관리하는 것이 정석이다.
+
+|Promise 상태|의미|React State 매핑 (예시)| 화면 UI|
+|-----|---|---|---|
+|Pending|대기 중 (진행 중)|`isLoading : ture`|로딩 스피너 (Spinner)|
+|Fulfilled|이행 됨 (성공)|`data : {...}`|실제 데이터/목록|
+|Rejected|거부됨 (실패)|`error : "에러 메세지"`|에러 안내 문구|
+
+## 최신 트렌드 실전 코드 : React Query (TanStack Query)
+요즘 실무에서는 Promise 패턴을 라이브러리를 사용해서 훨씬 쉽게 사용한다고 한다.
+```js
+import {useQuery} from '@tanstack/react-query';
+
+export default function UseList() {
+   // useQuery가 loading, error, data 상태를 알아서 관리해줌
+   const { data, isLoading, error } = useQuery({
+      queryKey : ['users'],
+      queryFn : () => axios.get('/users').then(res => res.data),
+   })
+
+   if (isLoading) return <div> 로딩 중 ...</div>;
+   if (error) return <div>에러 발생!</div>
+
+   return <div>{data.name}</div>
+}
+```
+## TypeScript를 활용한 커스텀 훅 (useAxios)
+매번 컴포넌트마다 `loading`, `error`, `try-catch`를 쓰면 코드가 지저분해진다. 이걸 하나로 묶어서 재사용하는 `hooks/useAxios.ts`이다.
+```ts
+// hooks/useAxios.ts
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+
+// 제네릭 T를 사용해서 어떤 데이터든 받을 수 있게 만듦
+export function useAxios<T>(url : srting) {
+   const [data, setData] = useState<T | null>(null);
+   const [loading, setLoading] = useState(false);
+   const [error, setError] = useState<string | null>(null);
+
+   useEffect(() => {
+      const fetchData = async () => {
+         setLoading(true);
+         try {
+            const res = await axios.get<T>(url);
+            setData(res.data);
+         } catch (err) {
+            if(axios.isAxiosError(err)) {
+               setError(err.message);
+            }
+         } finally {
+            setLoading(False);
+         }
+      };
+      fetchData();
+   },[url]);
+
+   //Hook의 리턴 값
+   return { data, loading, error };
+}
+```
 # Virtual DOM이란?
