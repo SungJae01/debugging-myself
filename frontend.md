@@ -93,6 +93,46 @@ h1 {
 
 과거 `float` 를 쓰던 방식에서 벗어나 현재 실무에서는 **Flexbox** 와 **Grid**를 표준으로 사용한다.
 
+1. Flexbox (1원 레이아웃)
+   행(Row) 또는 열(Column) 한 방향으로 정렬할 때 사용한다. (네비게이션 바, 카드 리스트 등)
+
+```css
+.container {
+  display : flex;
+
+  /* 주축 방향 설정 (row가 기본) */
+  flex-direction : row; /* or column */
+
+  /* 주축 정렬 (가로 정렬시 좌우 배치) */
+  justify-content : center; /* space-between, flex-start, flex-end */
+
+  /* 교차축 정렬 (가로 정렬 시 상하 배치) */
+  align-items : center; /* stretch, flex-start */
+
+  /* 줄바꿈 허용 여부 */
+  flex-wrap : wrap;
+
+  /* 아이템 간 간격 (매우 유용) */
+  gap: 10px;
+}
+```
+
+2. Grid (2차원 레이아웃)
+   행과 영을 동시에 제어하여 바둑판 같은 레이아웃을 만들 때 사용한다. (대시보드, 갤러리 등)
+
+```css
+.grid-container {
+  dispaly : grid;
+
+  /* 3개의 컬럼을 1:1:1 비율로 생성 */
+  grid-template-columns : 1fr 1fr 1fr;
+
+  /* 200px 컬럼을 반복해서 꽉 찰 때까지 생성 (반응형) */
+  grid-template-columns : repeat(auto-fit, minmax(200px, 1fr));
+
+  gap : 20px;
+}
+```
 
 
 ## 3. JavaScript (JS)
